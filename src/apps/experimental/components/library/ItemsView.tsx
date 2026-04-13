@@ -179,6 +179,12 @@ const ItemsView: FC<ItemsViewProps> = ({
             cardOptions.lines = 3;
         } else if (viewType === LibraryTab.Movies) {
             cardOptions.overlayPlayButton = true;
+        } else if (viewType === LibraryTab.Collections) {
+            // Collections use landscape waterfall composite images; force backdrop shape so
+            // cards display correctly even before images have been regenerated after upgrade.
+            if (shape === CardShape.Auto) {
+                cardOptions.shape = CardShape.Backdrop;
+            }
         } else if (viewType === LibraryTab.Series || viewType === LibraryTab.Networks) {
             cardOptions.overlayMoreButton = true;
         }
