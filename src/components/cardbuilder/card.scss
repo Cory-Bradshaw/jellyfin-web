@@ -81,9 +81,18 @@ button::-moz-focus-inner {
 }
 
 .cardPadder-collection {
-    // 75% of a 2× wide card = same absolute height as a portrait card (150% × 0.5 width).
-    // Resulting card aspect ratio is 4:3 landscape.
-    padding-bottom: 75%;
+    // 75% of 2× portrait width would ideally equal portrait height, but two corrections apply:
+    //
+    // 1. Vanilla Jellyfin: .cardBox carries a fixed 0.6em margin on each side.  That margin is
+    //    subtracted before padding-bottom is calculated, reducing both widths by the same 1.2em —
+    //    a larger share of the narrower portrait card.  The resulting height gap is
+    //    1.5 × 0.6em = 0.9em.
+    //
+    // 2. Gap-based layouts (e.g. ElegantFin): The column gap between cards means the collection
+    //    card content area is (2 × portrait_width + gap) rather than exactly 2×.  That extra
+    //    gap/2 of width contributes 0.75 × gap of extra height at 75% padding.  We correct for
+    //    this using --itemColumnGap (defined by ElegantFin; falls back to 0px in vanilla).
+    padding-bottom: calc(75% - 0.9em - 0.75 * var(--itemColumnGap, 0px));
     contain: strict;
 }
 

@@ -165,10 +165,24 @@ function loadNode(page, scope, node, openItems, selectedId, currentUser, callbac
         query.SortBy = 'SortName';
     }
     ApiClient.getItems(Dashboard.getCurrentUserId(), query).then(function (result) {
-        const nodes = result.Items.map(function (n) {
-            const state = openItems.indexOf(n.Id) == -1 ? 'closed' : 'open';
-            return getNode(n, state, n.Id == selectedId);
-        });
+        // Collect all ancestor IDs to prevent cycles: if a child has the same ID as
+        // any ancestor node, inserting it would create an infinite loop in the tree.
+        const ancestorIds = new Set();
+        const tree = $.jstree.reference('.libraryTree', page);
+        if (tree) {
+            let ancestor = node;
+            while (ancestor && ancestor.id !== '#') {
+                ancestorIds.add(ancestor.id);
+                ancestor = tree.get_node(ancestor.parent);
+            }
+        }
+
+        const nodes = result.Items
+            .filter(n => !ancestorIds.has(n.Id))
+            .map(function (n) {
+                const state = openItems.indexOf(n.Id) == -1 ? 'closed' : 'open';
+                return getNode(n, state, n.Id == selectedId);
+            });
         callback.call(scope, nodes);
         for (let i = 0, length = nodes.length; i < length; i++) {
             if (nodes[i].state.opened) {

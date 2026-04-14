@@ -56,6 +56,12 @@ function addListeners(container, className, eventName, fn) {
 function reloadItem(page, item, apiClient, focusContext) {
     currentItem = item;
 
+    // Show the generate-images section only for collections (BoxSet).
+    const generateContainer = page.querySelector('#collectionGenerateContainer');
+    if (generateContainer) {
+        generateContainer.classList.toggle('hide', item.Type !== 'BoxSet');
+    }
+
     apiClient.getRemoteImageProviders(getBaseRemoteOptions()).then(function (providers) {
         const btnBrowseAllImages = page.querySelectorAll('.btnBrowseAllImages');
         for (let i = 0, length = btnBrowseAllImages.length; i < length; i++) {
@@ -165,6 +171,11 @@ function getCardHtml(image, apiClient, options) {
             } else {
                 html += '<button type="button" is="paper-icon-button-light" class="autoSize" disabled title="' + globalize.translate('MoveRight') + '"><span class="material-icons chevron_right" aria-hidden="true"></span></button>';
             }
+
+            // For collections, allow promoting any backdrop to primary.
+            if (options.isCollection) {
+                html += '<button type="button" is="paper-icon-button-light" class="btnSetBackdropAsPrimary autoSize" data-index="' + image.ImageIndex + '" title="' + globalize.translate('SetAsPrimary') + '"><span class="material-icons star" aria-hidden="true"></span></button>';
+            }
         } else if (options.imageProviders.length) {
             html += '<button type="button" is="paper-icon-button-light" data-imagetype="' + image.ImageType + '" class="btnSearchImages autoSize" title="' + globalize.translate('Search') + '"><span class="material-icons search" aria-hidden="true"></span></button>';
         }
@@ -220,10 +231,11 @@ function renderImages(page, item, apiClient, images, imageProviders, elem) {
 
     const tagName = layoutManager.tv ? 'button' : 'div';
     const enableFooterButtons = !layoutManager.tv;
+    const isCollection = item.Type === 'BoxSet';
 
     for (let i = 0, length = images.length; i < length; i++) {
         const image = images[i];
-        const options = { index: i, numImages: length, imageProviders, imageSize, tagName, enableFooterButtons };
+        const options = { index: i, numImages: length, imageProviders, imageSize, tagName, enableFooterButtons, isCollection };
         html += getCardHtml(image, apiClient, options);
     }
 
@@ -303,6 +315,13 @@ function showActionSheet(context, imageCard) {
                     id: 'moveright'
                 });
             }
+
+            if (currentItem && currentItem.Type === 'BoxSet') {
+                commands.push({
+                    name: globalize.translate('SetAsPrimary'),
+                    id: 'setasprimary'
+                });
+            }
         }
 
         if (providerCount) {
@@ -331,10 +350,87 @@ function showActionSheet(context, imageCard) {
                 case 'moveright':
                     moveImage(context, apiClient, itemId, type, index, index + 1, dom.parentWithClass(imageCard, 'itemsContainer'));
                     break;
+                case 'setasprimary':
+                    setBackdropAsPrimary(context, index);
+                    break;
                 default:
                     break;
             }
         });
+    });
+}
+
+function setBackdropAsPrimary(context, backdropIndex) {
+    const apiClient = ServerConnections.getApiClient(currentItem.ServerId);
+    loading.show();
+
+    apiClient.ajax({
+        type: 'POST',
+        url: apiClient.getUrl('Collections/' + currentItem.Id + '/Images/Backdrop/' + backdropIndex + '/SetAsPrimary')
+    }).then(function () {
+        hasChanges = true;
+        reload(context);
+    }).catch(function () {
+        loading.hide();
+    });
+}
+
+function generateCollectionImages(context) {
+    const apiClient = ServerConnections.getApiClient(currentItem.ServerId);
+    loading.show();
+
+    // Snapshot current image info so we can detect when new images arrive.
+    apiClient.getItemImageInfos(currentItem.Id).then(function (baselineInfos) {
+        const baselineTimes = new Map(
+            baselineInfos.map(img => [img.ImageType + '-' + (img.ImageIndex ?? 0), img.DateModified])
+        );
+
+        // Queue a refresh with FullRefresh image mode — our CollectionImageProvider will
+        // force-regenerate all generated slots regardless of the date check.
+        apiClient.ajax({
+            type: 'POST',
+            url: apiClient.getUrl('Items/' + currentItem.Id + '/Refresh', {
+                metadataRefreshMode: 'ValidationOnly',
+                imageRefreshMode: 'FullRefresh',
+                replaceAllImages: false
+            })
+        }).then(function () {
+            // Poll until the server writes fresh images (up to 15 seconds).
+            pollForGeneratedImages(context, apiClient, baselineTimes, Date.now());
+        }).catch(function () {
+            loading.hide();
+        });
+    }).catch(function () {
+        loading.hide();
+    });
+}
+
+function pollForGeneratedImages(context, apiClient, baselineTimes, startTime, prevSnapshot) {
+    const timeout = 20000;
+    apiClient.getItemImageInfos(currentItem.Id).then(function (imageInfos) {
+        // Build a snapshot string from all current images — type, index, and timestamp.
+        const snapshot = imageInfos
+            .map(img => img.ImageType + '-' + (img.ImageIndex ?? 0) + ':' + img.DateModified)
+            .sort()
+            .join('|');
+
+        const hasAnyChange = imageInfos.some(function (img) {
+            const key = img.ImageType + '-' + (img.ImageIndex ?? 0);
+            return !baselineTimes.has(key) || baselineTimes.get(key) !== img.DateModified;
+        });
+
+        // Reload only once the image list has stabilised (two consecutive polls agree)
+        // or the timeout is reached, to ensure all generated variants are captured.
+        if ((hasAnyChange && snapshot === prevSnapshot) || Date.now() - startTime > timeout) {
+            hasChanges = true;
+            reload(context);
+        } else {
+            setTimeout(function () {
+                pollForGeneratedImages(context, apiClient, baselineTimes, startTime, snapshot);
+            }, 800);
+        }
+    }).catch(function () {
+        loading.hide();
     });
 }
 
@@ -375,6 +471,15 @@ function initEditor(context, options) {
 
     addListeners(context, 'btnBrowseAllImages', 'click', function () {
         showImageDownloader(context, this.getAttribute('data-imagetype') || 'Primary');
+    });
+
+    addListeners(context, 'btnGenerateCollectionImages', 'click', function () {
+        generateCollectionImages(context);
+    });
+
+    addListeners(context, 'btnSetBackdropAsPrimary', 'click', function () {
+        const backdropIndex = parseInt(this.getAttribute('data-index'), 10);
+        setBackdropAsPrimary(context, backdropIndex);
     });
 
     addListeners(context, 'btnImageCard', 'click', function () {
