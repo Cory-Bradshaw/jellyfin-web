@@ -747,6 +747,14 @@ function buildCard(index, item, apiClient, options) {
         shape = resolveMixedShapeByAspectRatio(item.PrimaryImageAspectRatio);
     }
 
+    // BoxSet items always use the double-wide collection card when displayed in a
+    // portrait or auto-resolved portrait context.  Explicit backdrop/banner/square
+    // shapes chosen by the caller (e.g. Thumb or Banner view styles) are left alone.
+    if (item.Type === 'BoxSet'
+            && ['portrait', 'overflowPortrait', 'auto', 'autohome', 'autooverflow', 'autoVertical', 'collection'].includes(shape)) {
+        shape = 'collection';
+    }
+
     // TODO move card creation code to Card component
 
     const imgInfo = getCardImageUrl({ api: toApi(apiClient), item, options, shape });

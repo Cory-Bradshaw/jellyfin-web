@@ -35,6 +35,20 @@ function useCard({ item, cardOptions }: UseCardProps) {
         shape = resolveMixedShapeByAspectRatio(item.PrimaryImageAspectRatio);
     }
 
+    // BoxSet items always use the double-wide collection card when the view
+    // is using portrait or auto shape.  Explicit backdrop/banner/square shapes
+    // chosen by the caller are left as-is.
+    if (item.Type === ItemKind.BoxSet
+        && (shape === CardShape.Portrait
+            || shape === CardShape.PortraitOverflow
+            || shape === CardShape.Auto
+            || shape === CardShape.AutoHome
+            || shape === CardShape.AutoOverflow
+            || shape === CardShape.AutoVertical
+            || shape === CardShape.Collection)) {
+        shape = CardShape.Collection;
+    }
+
     const {
         imgUrl,
         blurhash,
