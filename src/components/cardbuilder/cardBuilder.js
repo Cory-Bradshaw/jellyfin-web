@@ -87,7 +87,10 @@ export function setCardData(items, options) {
         const requestedShape = options.shape;
         options.shape = null;
 
-        if (primaryImageAspectRatio) {
+        // Collections (BoxSets) always use the double-wide collection card shape.
+        if (items.length > 0 && items.every(item => item.Type === 'BoxSet')) {
+            options.shape = 'collection';
+        } else if (primaryImageAspectRatio) {
             if (primaryImageAspectRatio >= 3) {
                 options.shape = 'banner';
                 options.coverImage = true;

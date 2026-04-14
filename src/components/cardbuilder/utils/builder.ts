@@ -203,6 +203,8 @@ export const getPostersPerRow = (shape: string, screenWidth: number, isOrientati
         case 'overflowPortrait': return postersPerRowOverflowPortrait(screenWidth, isOrientationLandscape, isTV);
         case 'overflowSquare': return postersPerRowOverflowSquare(screenWidth, isOrientationLandscape, isTV);
         case 'overflowBackdrop': return postersPerRowOverflowBackdrop(screenWidth, isOrientationLandscape, isTV);
+        // Collection cards are double-wide (2× portrait), so half as many fit per row.
+        case 'collection': return Math.max(1, Math.ceil(postersPerRowPortrait(screenWidth, isTV) / 2));
         default: return 4;
     }
 };
