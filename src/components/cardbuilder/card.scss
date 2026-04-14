@@ -80,6 +80,11 @@ button::-moz-focus-inner {
     contain: strict;
 }
 
+.cardPadder-collection {
+    padding-bottom: 150%;
+    contain: strict;
+}
+
 .cardPadder-banner {
     padding-bottom: 18.5%;
     contain: strict;
@@ -519,6 +524,14 @@ button::-moz-focus-inner {
     width: 33.333333333333333333333333333333%;
 }
 
+.collectionCard {
+    width: 66.666666666666666666666666666667%;
+
+    img {
+        object-position: top center;
+    }
+}
+
 .mixedPortraitCard {
     width: 12em;
 }
@@ -546,12 +559,20 @@ button::-moz-focus-inner {
     .portraitCard {
         width: 33.333333333333333333333333333333%;
     }
+
+    .collectionCard {
+        width: 66.666666666666666666666666666667%;
+    }
 }
 
 @media (min-width: 43.75em) {
     .squareCard,
     .portraitCard {
         width: 25%;
+    }
+
+    .collectionCard {
+        width: 50%;
     }
 }
 
@@ -569,6 +590,10 @@ button::-moz-focus-inner {
     .squareCard,
     .portraitCard {
         width: 20%;
+    }
+
+    .collectionCard {
+        width: 40%;
     }
 
     .smallBackdropCard {
@@ -592,6 +617,10 @@ button::-moz-focus-inner {
         width: 16.666666666666666666666666666667%;
     }
 
+    .collectionCard {
+        width: 33.333333333333333333333333333333%;
+    }
+
     .bannerCard {
         width: 33.333333333333333333333333333333%;
     }
@@ -605,6 +634,10 @@ button::-moz-focus-inner {
     .squareCard,
     .portraitCard {
         width: 14.285714285714285714285714285714%;
+    }
+
+    .collectionCard {
+        width: 28.571428571428571428571428571429%;
     }
 
     .smallBackdropCard {
@@ -625,12 +658,20 @@ button::-moz-focus-inner {
     .portraitCard {
         width: 12.5%;
     }
+
+    .collectionCard {
+        width: 25%;
+    }
 }
 
 @media (min-width: 120em) {
     .squareCard,
     .portraitCard {
         width: 11.111111111111111111111111111111%;
+    }
+
+    .collectionCard {
+        width: 22.222222222222222222222222222222%;
     }
 }
 
@@ -642,6 +683,10 @@ button::-moz-focus-inner {
     .squareCard,
     .portraitCard {
         width: 10%;
+    }
+
+    .collectionCard {
+        width: 20%;
     }
 }
 

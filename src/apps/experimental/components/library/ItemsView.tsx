@@ -180,11 +180,8 @@ const ItemsView: FC<ItemsViewProps> = ({
         } else if (viewType === LibraryTab.Movies) {
             cardOptions.overlayPlayButton = true;
         } else if (viewType === LibraryTab.Collections) {
-            // Collections use landscape waterfall composite images; force backdrop shape so
-            // cards display correctly even before images have been regenerated after upgrade.
-            if (shape === CardShape.Auto) {
-                cardOptions.shape = CardShape.Backdrop;
-            }
+            // Collections use a double-wide portrait composite; always show as collection cards.
+            cardOptions.shape = CardShape.Collection;
         } else if (viewType === LibraryTab.Series || viewType === LibraryTab.Networks) {
             cardOptions.overlayMoreButton = true;
         }
