@@ -81,7 +81,9 @@ button::-moz-focus-inner {
 }
 
 .cardPadder-collection {
-    padding-bottom: 150%;
+    // 75% of a 2× wide card = same absolute height as a portrait card (150% × 0.5 width).
+    // Resulting card aspect ratio is 4:3 landscape.
+    padding-bottom: 75%;
     contain: strict;
 }
 
