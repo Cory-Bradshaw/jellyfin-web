@@ -7,6 +7,7 @@ import { UserSettingsProvider } from 'hooks/useUserSettings';
 import { WebConfigProvider } from 'hooks/useWebConfig';
 import browser from 'scripts/browser';
 import { queryClient } from 'utils/query/queryClient';
+import ChannelSurfOverlay from 'components/channelSurf/ChannelSurfOverlay';
 
 import RootAppRouter from 'RootAppRouter';
 
@@ -21,6 +22,7 @@ const RootApp = () => (
                     <RootAppRouter />
                 </WebConfigProvider>
             </UserSettingsProvider>
+            <ChannelSurfOverlay />
         </ApiProvider>
         {useReactQueryDevtools && (
             <ReactQueryDevtools initialIsOpen={false} />

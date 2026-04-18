@@ -1,0 +1,670 @@
+@import url('https://fonts.googleapis.com/css2?family=Oswald:wght@400;600&family=Space+Mono&family=VT323&display=swap');
+
+// ---------------------------------------------------------------------------
+// Design tokens
+// ---------------------------------------------------------------------------
+
+$bg-deep:    #071442;
+$bg-mid:     #0b1f5c;
+$gold:       #ffcc33;
+$cream:      #f5ecd7;
+$now-cursor: #ff3ea5;
+$gutter-w:   220px;
+$row-h:      100px;
+$block-gap:  4px;
+
+// ---------------------------------------------------------------------------
+// Root — dedicated full-page layout
+// ---------------------------------------------------------------------------
+
+.cg-root {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    // Fill the viewport below the AppBar (~64px) and account for any padding
+    min-height: calc(100vh - 80px);
+    background: linear-gradient(160deg, $bg-mid 0%, $bg-deep 100%);
+    overflow: hidden;
+    font-family: 'Space Mono', 'Courier New', monospace;
+    color: $cream;
+    user-select: none;
+}
+
+// ---------------------------------------------------------------------------
+// Scanlines + vignette
+// ---------------------------------------------------------------------------
+
+.cg-scanlines {
+    pointer-events: none;
+    position: absolute;
+    inset: 0;
+    z-index: 10;
+    background: repeating-linear-gradient(
+        to bottom,
+        transparent 0px,
+        transparent 2px,
+        rgba(0, 0, 0, 0.08) 2px,
+        rgba(0, 0, 0, 0.08) 4px
+    );
+}
+
+.cg-vignette {
+    pointer-events: none;
+    position: absolute;
+    inset: 0;
+    z-index: 9;
+    background: radial-gradient(
+        ellipse at 50% 50%,
+        transparent 60%,
+        rgba(0, 0, 0, 0.45) 100%
+    );
+}
+
+// ---------------------------------------------------------------------------
+// Now-playing metadata panel
+// ---------------------------------------------------------------------------
+
+.cg-meta-panel {
+    flex: 0 0 auto;
+    max-height: 22vh;
+    display: flex;
+    align-items: stretch;
+    overflow: hidden;
+    border-bottom: 1px solid rgba(255, 204, 51, 0.18);
+    background: linear-gradient(90deg, rgba(0,0,0,0.35) 0%, rgba(0,0,0,0.15) 100%);
+    position: relative;
+}
+
+.cg-meta-thumb {
+    flex: 0 0 auto;
+    width: auto;
+    max-height: 22vh;
+    aspect-ratio: 2 / 3;
+    object-fit: cover;
+    display: block;
+    opacity: 0.9;
+}
+
+.cg-meta-info {
+    flex: 1;
+    min-width: 0;
+    padding: 0.65rem 1rem 0.65rem 1.1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+    overflow: hidden;
+}
+
+.cg-meta-channel {
+    font-family: 'Oswald', sans-serif;
+    font-size: 0.75rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--accent, $gold);
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+}
+
+.cg-meta-up-next {
+    border: 1px solid rgba($cream, 0.3);
+    border-radius: 2px;
+    padding: 0.05rem 0.35rem;
+    font-size: 0.55rem;
+    letter-spacing: 0.14em;
+    color: rgba($cream, 0.5);
+    vertical-align: middle;
+}
+
+.cg-meta-title {
+    font-family: 'Oswald', 'Impact', sans-serif;
+    font-size: 1.9rem;
+    font-weight: 600;
+    letter-spacing: 0.03em;
+    color: $cream;
+    line-height: 1.1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.cg-meta-episode {
+    font-family: 'Space Mono', monospace;
+    font-size: 1.1rem;
+    color: rgba($cream, 0.6);
+    letter-spacing: 0.05em;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.cg-meta-sub {
+    font-family: 'Space Mono', monospace;
+    font-size: 1.4rem;
+    color: rgba($cream, 0.5);
+    letter-spacing: 0.06em;
+    white-space: nowrap;
+}
+
+.cg-meta-overview {
+    font-size: 1.6rem;
+    color: rgba($cream, 0.65);
+    line-height: 1.45;
+    margin: 0.1rem 0 0;
+    flex: 1;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    -webkit-box-orient: vertical;
+}
+
+.cg-meta-actors {
+    font-size: 1.4rem;
+    color: rgba($cream, 0.45);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    letter-spacing: 0.03em;
+    margin-top: auto;
+    padding-top: 0.4rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    background: rgba(0, 0, 0, 0.18);
+    padding-left: 0.4rem;
+    padding-right: 0.4rem;
+    padding-bottom: 0.25rem;
+    border-radius: 0 0 2px 2px;
+    margin-left: -0.4rem;
+    margin-right: -0.4rem;
+}
+
+.cg-meta-actors-label {
+    font-family: 'Oswald', sans-serif;
+    font-size: 1.2rem;
+    letter-spacing: 0.14em;
+    color: var(--accent, $gold);
+    margin-right: 0.5em;
+    opacity: 0.7;
+}
+
+// Right sidebar: pie chart + remaining time + watch button
+.cg-meta-sidebar {
+    flex: 0 0 132px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.35rem;
+    padding: 0.6rem 0.85rem;
+    border-left: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.cg-meta-pie {
+    width: 64px;
+    height: 64px;
+    flex-shrink: 0;
+}
+
+.cg-meta-pie-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.6rem;
+    color: rgba($cream, 0.4);
+    text-align: center;
+    line-height: 1.4;
+    letter-spacing: 0.04em;
+}
+
+.cg-meta-watch-btn {
+    width: 100%;
+    margin-top: 0.25rem;
+}
+
+// ---------------------------------------------------------------------------
+// Masthead
+// ---------------------------------------------------------------------------
+
+.cg-masthead {
+    flex: 0 0 auto;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.3rem 1rem 0.25rem $gutter-w + 8px;
+    border-bottom: 1px solid rgba(255, 204, 51, 0.2);
+}
+
+.cg-wordmark {
+    font-family: 'Oswald', 'Impact', sans-serif;
+    font-size: 1.25rem;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    color: $gold;
+    text-transform: uppercase;
+}
+
+.cg-live-badge {
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+    padding: 0.15rem 0.55rem;
+    border: 1px solid $now-cursor;
+    border-radius: 3px;
+    font-size: 0.75rem;
+    letter-spacing: 0.12em;
+    color: $now-cursor;
+}
+
+.cg-live-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: $now-cursor;
+    animation: cgPulse 1.4s ease-in-out infinite;
+}
+
+@keyframes cgPulse {
+    0%, 100% { opacity: 1; }
+    50%       { opacity: 0.25; }
+}
+
+.cg-ch-counter {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.78rem;
+    color: rgba($cream, 0.4);
+    letter-spacing: 0.06em;
+}
+
+.cg-clock {
+    margin-left: auto;
+    font-family: 'VT323', monospace;
+    font-size: 1.7rem;
+    color: rgba($cream, 0.7);
+    letter-spacing: 0.06em;
+    padding-right: 1rem;
+}
+
+// ---------------------------------------------------------------------------
+// Time axis
+// ---------------------------------------------------------------------------
+
+.cg-time-axis {
+    flex: 0 0 auto;
+    display: flex;
+    align-items: center;
+    border-bottom: 1px solid rgba(255, 204, 51, 0.1);
+    padding: 0;
+}
+
+.cg-time-gutter {
+    flex: 0 0 $gutter-w;
+    min-width: $gutter-w;
+    max-width: $gutter-w;
+    // Transparent border matches the 2px right-border on .cg-gutter so both
+    // tracks start at exactly the same horizontal pixel.
+    border-right: 2px solid transparent;
+}
+
+.cg-time-track {
+    flex: 1;
+    position: relative;
+    height: 32px;
+    overflow: hidden;
+}
+
+// Vertical NOW line in the time axis — left is set via inline style from HourAxis.
+.cg-time-now-line {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: $now-cursor;
+    box-shadow: 0 0 6px $now-cursor;
+    z-index: 5;
+    pointer-events: none;
+}
+
+// One block per clock-hour spanning the window
+.cg-hour-block {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    box-sizing: border-box;
+    border-right: 1px solid rgba(255, 204, 51, 0.15);
+    display: flex;
+    align-items: center;
+
+    &--current {
+        // Subtle pink tint in the visible (elapsed-into-current-hour) area.
+        // The portion to the left of the NOW line is clipped by overflow:hidden.
+        background: rgba($now-cursor, 0.08);
+    }
+}
+
+// Hour label
+.cg-hour-label {
+    position: absolute;
+    left: 0.35rem;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 0.78rem;
+    letter-spacing: 0.07em;
+    color: rgba($cream, 0.55);
+    white-space: nowrap;
+    pointer-events: none;
+}
+
+// ---------------------------------------------------------------------------
+// Grid — flex-growing clip + continuously scrolling inner
+// ---------------------------------------------------------------------------
+
+// Fills remaining vertical space — flex: 1 works because .cg-root is a flex column
+// with a defined min-height, giving the clip a computable size.
+.cg-grid-clip {
+    flex: 1;
+    min-height: 200px;  // fallback so at least a few rows show
+    overflow: hidden;
+    position: relative;
+}
+
+// The inner scrolls upward continuously via CSS animation.
+// JS sets --scroll-h = totalChannels * ROW_H_PX and animationDuration.
+.cg-grid-inner {
+    display: flex;
+    flex-direction: column;
+    will-change: transform;
+    animation: cgScrollUp linear infinite;
+}
+
+@keyframes cgScrollUp {
+    from { transform: translateY(0); }
+    to   { transform: translateY(calc(var(--scroll-h, 0px) * -1)); }
+}
+
+.cg-row {
+    display: flex;
+    align-items: stretch;
+    height: $row-h;
+    flex-shrink: 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+    background: var(--tint, transparent);
+    cursor: pointer;
+    transition: background 0.15s;
+
+    &:hover {
+        background: rgba(255, 255, 255, 0.05);
+    }
+
+    &:last-child {
+        border-bottom: none;
+    }
+}
+
+// ---------------------------------------------------------------------------
+// Gutter (channel label)
+// ---------------------------------------------------------------------------
+
+.cg-gutter {
+    flex: 0 0 $gutter-w;
+    min-width: $gutter-w;
+    max-width: $gutter-w;
+    overflow: hidden;                  // keep numbers/names from leaking into the track
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    justify-content: center;
+    padding: 0 0.6rem 0 0.5rem;
+    border-right: 2px solid var(--accent, rgba(255, 255, 255, 0.1));
+    gap: 0.05rem;
+}
+
+.cg-ch-number {
+    font-family: 'VT323', monospace;
+    font-size: 2.8rem;
+    line-height: 1;
+    color: var(--accent, $cream);
+    letter-spacing: 0.04em;
+}
+
+.cg-ch-name {
+    font-family: 'Oswald', 'Impact', sans-serif;
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--accent, rgba($cream, 0.8));
+    opacity: 0.9;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+}
+
+// ---------------------------------------------------------------------------
+// Track (program blocks)
+// ---------------------------------------------------------------------------
+
+.cg-track {
+    flex: 1;
+    position: relative;
+    overflow: hidden;
+}
+
+// Full-height NOW bar — single element inside .cg-grid-clip.
+// Positioned via --now-frac (0–1 fraction of the track width from the track's left edge).
+// track width = 100% - $gutter-w, so left = $gutter-w + --now-frac * (100% - $gutter-w).
+.cg-now-bar {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: calc(#{$gutter-w} + var(--now-frac, 0) * (100% - #{$gutter-w}));
+    width: 2px;
+    background: $now-cursor;
+    box-shadow: 0 0 8px $now-cursor, 0 0 20px rgba($now-cursor, 0.3);
+    z-index: 6;
+    pointer-events: none;
+}
+
+// ---------------------------------------------------------------------------
+// Program blocks
+// ---------------------------------------------------------------------------
+
+.cg-block {
+    position: absolute;
+    top: $block-gap;
+    bottom: $block-gap;
+    box-sizing: border-box;
+    border-left: 3px solid var(--accent, rgba(255, 255, 255, 0.2));
+    padding: 0 0.5rem;
+    overflow: visible;     // allow popover to escape
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    min-width: 0;
+    transition: background 0.12s;
+
+    &:hover {
+        background: rgba(255, 255, 255, 0.06);
+        z-index: 20;
+    }
+
+    &--now {
+        border-left-color: $now-cursor;
+    }
+
+    // Show popover on hover
+    &:hover .cg-popover {
+        opacity: 1;
+        pointer-events: auto;
+        transform: translateY(0);
+    }
+}
+
+.cg-block-inner {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    overflow: hidden;
+}
+
+.cg-block-title {
+    font-family: 'Oswald', 'Impact', sans-serif;
+    font-size: 2.1rem;
+    font-weight: 600;
+    line-height: 1.6;
+    letter-spacing: 0.04em;
+    color: $cream;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.cg-block-meta {
+    font-size: 0.75rem;
+    line-height: 1.6;
+    color: rgba($cream, 0.5);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+// ---------------------------------------------------------------------------
+// Popover (CSS hover panel)
+// ---------------------------------------------------------------------------
+
+.cg-popover {
+    position: absolute;
+    top: calc(100% + 6px);
+    left: 0;
+    z-index: 100;
+    width: 260px;
+    background: #0e1d52;
+    border: 1px solid var(--accent, rgba(255, 255, 255, 0.2));
+    border-radius: 4px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.7);
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(-4px);
+    transition: opacity 0.15s, transform 0.15s;
+    overflow: hidden;
+}
+
+.cg-popover-img {
+    display: block;
+    width: 100%;
+    height: 120px;
+    object-fit: cover;
+}
+
+.cg-popover-body {
+    padding: 0.6rem 0.75rem 0.75rem;
+}
+
+.cg-popover-title {
+    font-family: 'Oswald', 'Impact', sans-serif;
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: $cream;
+    letter-spacing: 0.03em;
+    line-height: 1.2;
+    margin-bottom: 0.2rem;
+}
+
+.cg-popover-episode {
+    font-size: 0.72rem;
+    color: rgba($cream, 0.65);
+    margin-bottom: 0.15rem;
+    letter-spacing: 0.02em;
+    font-style: italic;
+}
+
+.cg-popover-sub {
+    font-size: 0.65rem;
+    color: rgba($cream, 0.5);
+    margin-bottom: 0.4rem;
+    letter-spacing: 0.05em;
+}
+
+.cg-popover-overview {
+    font-size: 0.68rem;
+    color: rgba($cream, 0.7);
+    line-height: 1.45;
+    max-height: 4.5em;
+    overflow: hidden;
+    margin: 0 0 0.5rem;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+}
+
+.cg-popover-time {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.62rem;
+    color: rgba($cream, 0.4);
+    margin-bottom: 0.5rem;
+}
+
+.cg-jump-btn {
+    display: block;
+    width: 100%;
+    padding: 0.35rem 0.5rem;
+    background: transparent;
+    border: 1px solid var(--accent, $gold);
+    border-radius: 3px;
+    color: var(--accent, $gold);
+    font-family: 'Oswald', 'Impact', sans-serif;
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: background 0.12s, color 0.12s;
+
+    &:hover {
+        background: var(--accent, $gold);
+        color: $bg-deep;
+    }
+}
+
+// ---------------------------------------------------------------------------
+// Footer ticker
+// ---------------------------------------------------------------------------
+
+.cg-ticker-bar {
+    flex: 0 0 auto;
+    display: flex;
+    align-items: center;
+    border-top: 1px solid rgba(255, 204, 51, 0.15);
+    overflow: hidden;
+}
+
+.cg-ticker-label {
+    flex: 0 0 auto;
+    padding: 0.2rem 0.75rem;
+    background: $gold;
+    color: $bg-deep;
+    font-family: 'Oswald', sans-serif;
+    font-size: 0.78rem;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    white-space: nowrap;
+}
+
+.cg-ticker-track {
+    flex: 1;
+    overflow: hidden;
+    padding: 0.2rem 0.75rem;
+}
+
+.cg-ticker-text {
+    display: inline-block;
+    white-space: nowrap;
+    font-size: 0.82rem;
+    color: rgba($cream, 0.6);
+    letter-spacing: 0.04em;
+    animation: cgTicker 60s linear infinite;
+}
+
+@keyframes cgTicker {
+    from { transform: translateX(0); }
+    to   { transform: translateX(-50%); }
+}

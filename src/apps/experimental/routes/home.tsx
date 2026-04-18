@@ -5,6 +5,7 @@ import globalize from '../../../lib/globalize';
 import { clearBackdrop } from '../../../components/backdrop/backdrop';
 import layoutManager from '../../../components/layoutManager';
 import Page from '../../../components/Page';
+import ChannelSurfButton from '../../../components/channelSurf/ChannelSurfButton';
 import { EventType } from 'constants/eventType';
 import Events from 'utils/events';
 
@@ -170,6 +171,7 @@ const Home = () => {
                 backDropType='movie,series,book'
             >
                 <div className='tabContent pageTabContent' id='homeTab' data-index='0'>
+                    <ChannelSurfButton />
                     <div className='sections'></div>
                 </div>
                 <div className='tabContent pageTabContent' id='favoritesTab' data-index='1'>
