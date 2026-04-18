@@ -3,6 +3,7 @@ import { BaseItemKind } from '@jellyfin/sdk/lib/generated-client/models/base-ite
 import { CollectionType } from '@jellyfin/sdk/lib/generated-client/models/collection-type';
 import ArrowDropDown from '@mui/icons-material/ArrowDropDown';
 import Favorite from '@mui/icons-material/Favorite';
+import Tv from '@mui/icons-material/Tv';
 import Button from '@mui/material/Button/Button';
 import Icon from '@mui/material/Icon';
 import { Theme } from '@mui/material/styles';
@@ -112,6 +113,8 @@ const UserViewNav = () => {
         getCurrentUserView(userViews?.Items, location.pathname, libraryId || ancestorLibraryId, collectionType, activeTab)
     ), [ activeTab, collectionType, libraryId, ancestorLibraryId, location.pathname, userViews ]);
 
+    const isChannelGuide = location.pathname === '/channelguide';
+
     if (isPending) return null;
 
     return (
@@ -124,6 +127,16 @@ const UserViewNav = () => {
                 to='/home?tab=1'
             >
                 {globalize.translate(MetaView.Favorites.Name)}
+            </Button>
+
+            <Button
+                variant='text'
+                color={isChannelGuide ? 'primary' : 'inherit'}
+                startIcon={<Tv />}
+                component={Link}
+                to='/channelguide'
+            >
+                {'Channel Guide'}
             </Button>
 
             {webConfig.menuLinks?.map(link => (

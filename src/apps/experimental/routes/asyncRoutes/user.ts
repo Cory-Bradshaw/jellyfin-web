@@ -2,6 +2,7 @@ import { AsyncRoute } from 'components/router/AsyncRoute';
 import { AppType } from 'constants/appType';
 
 export const ASYNC_USER_ROUTES: AsyncRoute[] = [
+    { path: 'channelguide', type: AppType.Experimental },
     { path: 'home', type: AppType.Experimental },
     { path: 'homevideos', type: AppType.Experimental },
     { path: 'livetv', type: AppType.Experimental },
